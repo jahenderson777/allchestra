@@ -1,0 +1,18 @@
+[Unit]
+Description=Allchestra Node Signaling Server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /opt/signaling-server/app.js
+WorkingDirectory=/opt/signaling-server
+Restart=always
+User=nobody
+Group=nogroup
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=allchestra
+
+[Install]
+WantedBy=multi-user.target
