@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Example</title>
+</head>
+<body>
+    <button id="startButton">Start</button>
+    <button id="sendButton">Test send</button>
+    <script>
+        const signalingServerUrl = 'wss://earthics.org/ws/';
+        let peerConnection;
+        let dataChannel;
+        let clientId = Math.floor(Math.random() * 10000);  // Generate a random client ID
+        let iceCandidatesQueue = [];
+        let isRemoteDescriptionSet = false;
+
+        document.getElementById('startButton').addEventListener('click', async () => {
+            const signalingSocket = new WebSocket(signalingServerUrl);
+
+            signalingSocket.onopen = () => {
+                signalingSocket.send(JSON.stringify({ type: 'register', role: 'client', clientId: clientId }));
+            };
+
+            signalingSocket.onmessage = async (message) => {
+                const data = JSON.parse(message.data);
+                console.log(data);
+
+                if (data.type === 'offer') {
+                    console.log("offer");
+                    await peerConnection.setRemoteDescription(data.offer);
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    signalingSocket.send(JSON.stringify({ type: 'answer', answer: peerConnection.localDescription, clientId: clientId }));
+
+                    isRemoteDescriptionSet = true;
+                    // Add any queued ICE candidates
+
+                    console.log('Add any queued ICE candidates');
+                    while (iceCandidatesQueue.length > 0) {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(iceCandidatesQueue.shift()));
+                    }
+                } else if (data.type === 'candidate') {
+                    console.log("candidate remotedesc = " + isRemoteDescriptionSet);
+                    if (isRemoteDescriptionSet) {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    } else {
+                        iceCandidatesQueue.push(data.candidate);
+                    }
+                }
+            };
+
+            peerConnection = new RTCPeerConnection();
+
+            dataChannel = peerConnection.createDataChannel('dataChannel');
+            dataChannel.onopen = () => {
+                console.log('Data channel opened');
+            };
+            dataChannel.onclose = () => {
+                console.log('Data channel closed');
+            };
+
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    signalingSocket.send(JSON.stringify({ type: 'candidate', candidate: event.candidate, clientId: clientId }));
+                }
+            };
+
+            peerConnection.onconnectionstatechange = () => {
+                console.log('Connection state change:', peerConnection.connectionState);
+            };
+
+            peerConnection.oniceconnectionstatechange = () => {
+                console.log('ICE connection state:', peerConnection.iceConnectionState);
+                if (peerConnection.iceConnectionState === 'connected' || peerConnection.iceConnectionState === 'completed') {
+                    peerConnection.getStats().then(statsReport => {
+                        statsReport.forEach(report => {
+                            if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+                                console.log('Selected candidate pair:', report);
+                            }
+                        });
+                    });
+                }
+            };
+
+            
+
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (event) => {
+                    const data = {
+                        type: 'orientationData',
+                        orientation: {
+                            alpha: event.alpha,
+                            beta: event.beta,
+                            gamma: event.gamma
+                        }
+                    };
+                    if (dataChannel.readyState === 'open') {
+                        dataChannel.send(JSON.stringify(data));
+                    }
+                });
+            } else {
+                alert("DeviceOrientationEvent is not supported on your device.");
+            }
+        });
+
+document.getElementById('sendButton').addEventListener('click', async () => {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                try {
+                    const response = await DeviceOrientationEvent.requestPermission();
+                    if (response === 'granted') {
+                        startSendingOrientationData();
+                    } else {
+                        console.error('Permission denied for device orientation.');
+                    }
+                } catch (error) {
+                    console.error('Error requesting device orientation permission:', error);
+                }
+            } else {
+                // For browsers that do not require permission request
+                startSendingOrientationData();
+            }
+        });
+
+        function startSendingOrientationData() {
+            if (dataChannel.readyState === 'open') {
+                window.addEventListener('deviceorientation', handleOrientation, true);
+            } else {
+                console.error('Data channel is not open');
+            }
+        }
+
+        function handleOrientation(event) {
+            if (dataChannel.readyState === 'open') {
+                const orientationData = {
+                    alpha: event.alpha, // Rotation around the z-axis
+                    beta: event.beta,   // Rotation around the x-axis
+                    gamma: event.gamma  // Rotation around the y-axis
+                };
+                dataChannel.send(JSON.stringify(orientationData));
+            }
+        }
+
+        setInterval(() => {
+            if (dataChannel.readyState !== 'open') {
+                window.removeEventListener('deviceorientation', handleOrientation, true);
+            }
+        }, 50);
+    </script>
+</body>
+</html>

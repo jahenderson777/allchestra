@@ -1,0 +1,17 @@
+{
+  "name": "allchestra-webrtc-midi-bridge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@koush/wrtc": "^0.5.3",
+    "https": "^1.0.0",
+    "ws": "^8.17.0"
+  }
+}
