@@ -44,8 +44,9 @@ function handleTouchStart(data) {
     midiOut.send('noteon', {
         note: 36,
         velocity: 127,
-        channel: 1
+        channel: 0
     });
+    console.log("noteon");
 }
 
 const signalingServerUrl = 'wss://earthics.org./ws/';
