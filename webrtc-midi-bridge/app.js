@@ -20,7 +20,7 @@ function mapRange(value, inMin, inMax, outMin, outMax) {
     return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-function handleData(data) {
+function handleOrientation(data) {
     console.log(data);
     midiOut.send('cc', {
         controller: 1,
@@ -36,6 +36,15 @@ function handleData(data) {
         controller: 3,
         value: Math.floor(mapRange(data.gamma, -90, 90, 0, 127)),
         channel: 0
+    });
+}
+
+function handleTouchStart(data) {
+    console.log(data);
+    midiOut.send('noteon', {
+        note: 36,
+        velocity: 127,
+        channel: 1
     });
 }
 
@@ -70,11 +79,12 @@ signalingSocket.onmessage = async (message) => {
             const dataChannel = event.channel;
             dataChannel.onmessage = (event) => {
                 //console.log(event);
-                const orientationData = JSON.parse(event.data);
-                if (orientationData.type === 'orientationData') {
-                    //console.log('Received orientation data:', orientationData.orientation);
-                    handleData(orientationData.orientation);
-                    // Use the orientation data for your music synth
+                const data = JSON.parse(event.data);
+                if (data.type === 'orientation') {
+                    handleOrientation(data.params);
+                }
+                if (data.type === 'touchStart') {
+                    handleTouchStart(data.params);
                 }
             };
         };
