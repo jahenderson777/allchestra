@@ -153,6 +153,7 @@ document.getElementById('sendButton').addEventListener('click', async () => {
         }
 
         function handleTouchStart(event) {
+            alert("touchstart");
             if (dataChannel.readyState === 'open') {
                 const orientationData = {
                     touch: "start"
