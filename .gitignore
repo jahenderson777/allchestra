@@ -34,3 +34,4 @@ Procfile
 .dir-locals.el
 node_modules/
 /junk
+package-lock.json

@@ -100,7 +100,7 @@
                 window.addEventListener('deviceorientation', (event) => {
                     const data = {
                         type: 'orientationData',
-                        orientation: {
+                        params: {
                             alpha: event.alpha,
                             beta: event.beta,
                             gamma: event.gamma
@@ -154,14 +154,13 @@
 
         function handleTouchStart(event) { 
             if (dataChannel.readyState === 'open') {
-                const orientationData = {
-                        type: 'orientationData',
-                        orientation: {
-                            touch: 2
+                const data = {
+                        type: 'touchStart',
+                        params: {
+                            touch: 1
                         }
                     }; 
-                dataChannel.send(JSON.stringify(orientationData));
-                alert("touchstart3");
+                dataChannel.send(JSON.stringify(data));
             }
         }
         document.getElementById('pad').addEventListener('touchstart', handleTouchStart);
