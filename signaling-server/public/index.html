@@ -153,8 +153,9 @@ document.getElementById('sendButton').addEventListener('click', async () => {
         }
 
         function handleTouchStart(event) {
-            alert("touchstart");
+            
             if (dataChannel.readyState === 'open') {
+                alert("touchstart2");
                 const orientationData = {
                     touch: "start"
                 };
