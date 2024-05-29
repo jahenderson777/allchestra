@@ -155,11 +155,12 @@ document.getElementById('sendButton').addEventListener('click', async () => {
         function handleTouchStart(event) {
             
             if (dataChannel.readyState === 'open') {
-                alert("touchstart2");
+                
                 const orientationData = {
-                    touch: "start"
+                    touch: 2
                 };
                 dataChannel.send(JSON.stringify(orientationData));
+                alert("touchstart3");
             }
         }
         document.getElementById('pad').addEventListener('touchstart', handleTouchStart);
