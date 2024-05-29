@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebRTC Example</title>
+    <style>
+        #pad {
+          background-color: lightcyan;
+          width: 500px;
+          height: 500px;
+          border: 1px solid gray;
+        }
+        
+    </style>
 </head>
 <body>
     <button id="startButton">Start</button>
     <button id="sendButton">Test send</button>
+    <div id="pad"></div>
     <script>
         const signalingServerUrl = 'wss://earthics.org/ws/';
         let peerConnection;
@@ -141,6 +151,16 @@ document.getElementById('sendButton').addEventListener('click', async () => {
                 dataChannel.send(JSON.stringify(orientationData));
             }
         }
+
+        function handleTouchStart(event) {
+            if (dataChannel.readyState === 'open') {
+                const orientationData = {
+                    touch: "start"
+                };
+                dataChannel.send(JSON.stringify(orientationData));
+            }
+        }
+        document.getElementById('startButton').addEventListener('click', handleTouchStart);
 
         setInterval(() => {
             if (dataChannel.readyState !== 'open') {
