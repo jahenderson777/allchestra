@@ -5,7 +5,7 @@ const { RTCPeerConnection, RTCSessionDescription, RTCIceCandidate } = require('@
 
 //console.log(easymidi.getOutputs()); process.exit(1);
 
-const midiOut = new easymidi.Output(easymidi.getOutputs()[0]);
+const midiOut = new easymidi.Output(easymidi.getOutputs()[1]);
 // const x =  Math.floor(Math.random() * 127);
 // console.log(x);
 // midiOut.send('cc', {
