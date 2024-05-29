@@ -160,7 +160,7 @@ document.getElementById('sendButton').addEventListener('click', async () => {
                 dataChannel.send(JSON.stringify(orientationData));
             }
         }
-        document.getElementById('startButton').addEventListener('click', handleTouchStart);
+        document.getElementById('pad').addEventListener('click', handleTouchStart);
 
         setInterval(() => {
             if (dataChannel.readyState !== 'open') {
