@@ -107,7 +107,7 @@
                         }
                     };
                     if (dataChannel.readyState === 'open') {
-                        //dataChannel.send(JSON.stringify(data));
+                        dataChannel.send(JSON.stringify(data));
                     }
                 });
             } else {
@@ -148,7 +148,7 @@
                     beta: event.beta,   // Rotation around the x-axis
                     gamma: event.gamma  // Rotation around the y-axis
                 };
-                //dataChannel.send(JSON.stringify(orientationData));
+                dataChannel.send(JSON.stringify(orientationData));
             }
         }
 
