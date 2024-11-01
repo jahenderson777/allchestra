@@ -97,24 +97,28 @@
             
 
             if (window.DeviceOrientationEvent) {
-                window.addEventListener('deviceorientation', (event) => {
-                    const data = {
-                        type: 'orientation',
-                        params: {
-                            alpha: event.alpha,
-                            beta: event.beta,
-                            gamma: event.gamma
-                        }
-                    };
-                    if (dataChannel.readyState === 'open') {
-                        dataChannel.send(JSON.stringify(data));
-                    }
-                });
+                window.addEventListener('deviceorientation', handleOrientation);
             } else {
                 alert("DeviceOrientationEvent is not supported on your device.");
             }
 
         });
+
+        function handleOrientation(event) {
+            if (dataChannel.readyState === 'open') {
+                const data = {
+                    type: 'orientation',
+                    params: {
+                        alpha: event.alpha,
+                        beta: event.beta,
+                        gamma: event.gamma
+                    }
+                };
+                if (dataChannel.readyState === 'open') {
+                    dataChannel.send(JSON.stringify(data));
+                }
+            }
+        }
 
         document.getElementById('sendButton').addEventListener('click', async () => {
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -142,16 +146,7 @@
             }
         }
 
-        function handleOrientation(event) {
-            if (dataChannel.readyState === 'open') {
-                const orientationData = {
-                    alpha: event.alpha, // Rotation around the z-axis
-                    beta: event.beta,   // Rotation around the x-axis
-                    gamma: event.gamma  // Rotation around the y-axis
-                };
-                dataChannel.send(JSON.stringify(orientationData));
-            }
-        }
+        
 
         function handleTouchStart(event) { 
             if (dataChannel.readyState === 'open') {
