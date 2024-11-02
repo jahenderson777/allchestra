@@ -137,8 +137,8 @@
                 oldAlpha = alpha;
                 oldBeta = beta;
                 oldGamma = gamma;
-                
-                if (Object.keys(data.params).length && dataChannel.readyState === 'open') {
+
+                if (Object.keys(data.params).length > 0 && dataChannel.readyState === 'open') {
                     dataChannel.send(JSON.stringify(data));
                 }
             }
