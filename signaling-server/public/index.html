@@ -140,6 +140,10 @@
 
                 if (Object.keys(data.params).length > 0 && dataChannel.readyState === 'open') {
                     data.params.l = Object.keys(data.params).length;
+                    data.params.eAlpha = event.alpha;
+                    data.params.eBeta = event.beta;
+                    data.params.eGamma = event.gamma;
+
                     dataChannel.send(JSON.stringify(data));
                 }
             }
