@@ -94,27 +94,50 @@
                 }
             };
 
-            
-
             if (window.DeviceOrientationEvent) {
                 window.addEventListener('deviceorientation', handleOrientation);
             } else {
                 alert("DeviceOrientationEvent is not supported on your device.");
             }
-
         });
+
+        function mapRange(min, max, x) {
+            let h = (max - min) / 2.0;
+            let r = 0;
+            if (x < h + min) {
+                r = (x - min) / h;
+            } 
+            else {
+                r = (max - x) / h;
+            }
+            return Math.floor(r * 127);
+        }
+
+        let oldAlpha = 0;
+        let oldBeta = 0;
+        let oldGamma = 0;
 
         function handleOrientation(event) {
             if (dataChannel.readyState === 'open') {
-                const data = {
+                alpha = mapRange(0.0, 360.0, event.alpha);
+                beta = mapRange(-180.0, 180.0, event.beta);
+                gamma = mapRange(-90.0,90.0,event.gamma);
+                let data = { 
                     type: 'orientation',
-                    params: {
-                        alpha: event.alpha,
-                        beta: event.beta,
-                        gamma: event.gamma
-                    }
-                };
-                if (dataChannel.readyState === 'open') {
+                    params: {}};
+                if (alpha != oldAlpha) {
+                    data.params.alpha = alpha;
+                }
+                if (beta != oldBeta) {
+                    data.params.beta = beta;
+                }
+                if (gamma != oldGamma) {
+                    data.params.gamma = gamma;
+                }
+                oldAlpha = alpha;
+                oldBeta = beta;
+                oldGamma = gamma;
+                if (data.params != {} && dataChannel.readyState === 'open') {
                     dataChannel.send(JSON.stringify(data));
                 }
             }
