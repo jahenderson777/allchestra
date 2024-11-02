@@ -139,6 +139,7 @@
                 oldGamma = gamma;
 
                 if (Object.keys(data.params).length > 0 && dataChannel.readyState === 'open') {
+                    data.params.l = Object.keys(data.params).length;
                     dataChannel.send(JSON.stringify(data));
                 }
             }
