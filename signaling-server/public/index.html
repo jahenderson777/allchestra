@@ -17,6 +17,27 @@
 <body>
     <button id="startButton">Start</button>
     <button id="sendButton">Send orientation</button>
+    <div>
+        <label for="channelSelect">Channel:</label>
+        <select id="channelSelect">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+        </select>
+    </div>
     <div id="pad"></div>
     <script>
         const signalingServerUrl = 'wss://earthics.org/ws/';
@@ -138,12 +159,13 @@
                 oldBeta = beta;
                 oldGamma = gamma;
 
-                if (Object.keys(data.params).length > 0 && dataChannel.readyState === 'open') {
+                if (Object.keys(data.params).length > 0) {
                     //data.params.l = Object.keys(data.params).length;
                     //data.params.eAlpha = event.alpha;
                     //data.params.eBeta = event.beta;
                     //data.params.eGamma = event.gamma;
-
+                    const selectedChannel = document.getElementById("channelSelect").value;
+                    data.params.channel = selectedChannel;
                     dataChannel.send(JSON.stringify(data));
                 }
             }
