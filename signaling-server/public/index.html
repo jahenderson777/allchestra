@@ -165,7 +165,7 @@
                     //data.params.eBeta = event.beta;
                     //data.params.eGamma = event.gamma;
                     const selectedChannel = document.getElementById("channelSelect").value;
-                    data.params.channel = selectedChannel;
+                    data.params.channel = Number(selectedChannel);
                     dataChannel.send(JSON.stringify(data));
                 }
             }
